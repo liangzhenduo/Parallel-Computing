@@ -1,0 +1,33 @@
+#!/bin/bash
+#PBS -N run
+#PBS -l nodes=1:ppn=16
+#PBS -q AM089_queue
+#PBS –j oe
+cd $PBS_O_WORKDIR
+g++ pic.cc -o pic
+g++ -pthread pi.cc -o pi
+
+echo "##########################"
+echo "#    Serial Algorithm    #"
+echo "##########################"
+
+for i in $(seq 1 10 ) ;
+do
+	echo "#Round $i";
+	./pic 10000000;
+done
+
+array=(1 2 4 8 16);
+for i in ${array[@]} ;
+do
+	echo "##########################"
+	echo "#   Parallel Algorithm   #"
+	echo "#       $i Threads       #"
+	echo "##########################"
+
+	for j in $(seq 1 10 ) ;
+	do
+	    echo "#Round $j";
+		./pi 10000000 $i;
+	done
+done

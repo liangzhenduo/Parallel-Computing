@@ -1,0 +1,33 @@
+#!/bin/bash
+#PBS -N run
+#PBS -l nodes=1:ppn=16
+#PBS -q AM089_queue
+#PBS –j oe
+cd $PBS_O_WORKDIR
+g++ detc.cc -o detc
+g++ -pthread det.cc -o det
+
+echo "##########################"
+echo "#    Serial Algorithm    #"
+echo "##########################"
+
+for i in $(seq 1 10 ) ;
+do
+	echo "#Round $i";
+	./detc 12 matrix12.txt;
+done
+
+array=(1 2 4 8 16);
+for i in ${array[@]} ;
+do
+	echo "##########################"
+	echo "#   Parallel Algorithm   #"
+	echo "#       $i Threads       #"
+	echo "##########################"
+
+	for j in $(seq 1 10 ) ;
+	do
+	        echo "#Round $j";
+		./det 12 matrix12.txt $i;
+	done
+done

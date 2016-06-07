@@ -1,0 +1,34 @@
+#!/bin/bash
+#PBS -N run
+#PBS -l nodes=4:ppn=4
+#PBS -q AM089_queue
+#PBS –j oe
+cd $PBS_O_WORKDIR
+g++ detc.cc -o detc
+mpic++ -i_dynamic mpi.cc -o mpi
+
+echo "##########################"
+echo "#    Serial Algorithm    #"
+echo "##########################"
+
+for i in $(seq 1 10 ) ;
+do
+	echo "#Round $i";
+	./detc 12 matrix12.txt;
+done
+
+array=(1 2 4 8 16);
+for i in ${array[@]} ;
+do
+	echo "##########################"
+	echo "#     MPI  Algorithm     #"
+	echo "#      $i Processes      #"
+	echo "##########################"
+
+	for j in $(seq 1 10 ) ;
+	do
+	    echo "#Round $j";
+		mpirun -np $i ./mpi 12 matrix12.txt;
+	done
+done
+
